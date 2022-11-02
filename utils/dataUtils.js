@@ -1,9 +1,8 @@
 const crypto = require('node:crypto');
 
-const requiredFields = ['title', 'time', 'price', 'date'];
+const requiredFields = require('./constants').VALID_FLIGHT_FIELDS;
 
-const validateFlightData = (flightData) => {    
-    // Check if all fields are present in the flight data object
+const validateFlightData = (flightData) => {
     const inputFields = Object.keys(flightData);
 
     // Ensures all required fields are present in the input data

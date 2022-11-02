@@ -12,4 +12,7 @@ router.post('/add', controller.addFlight);
 // Get single flight data using its ID
 router.get('/:id', controller.getFlight);
 
+// Update a flight using its id 
+router.patch('/:id/update', controller.updateFlight);
+
 module.exports = router;

@@ -7,6 +7,7 @@ const {
     mkdirSync,
     closeSync
  } = require('fs');
+const { VALID_FLIGHT_FIELDS } = require('./constants');
 
 const dbPath = join(__dirname, '..', 'data', 'db.json');
 
@@ -64,12 +65,37 @@ const getFlightFromDB = (flightId) => {
     try{
         return readFromDB().find((flight) => flight.id === flightId);
     }catch(err){
-        return {};
+        return null;
     }
+}
+
+const updateFlightInDB = (flightId, updateParams) => {
+    const flightFound = getFlightFromDB(flightId);
+
+    if(!flightFound) throw new Error('Incorrect flight id specified');
+
+    // validate the update params
+    const isValidParams = Object.keys(updateParams).every(fieldToUpdate => ( VALID_FLIGHT_FIELDS.indexOf(fieldToUpdate) > -1 ));
+
+    if(!isValidParams) throw new Error('Invalid update params');
+
+    // Update the flight object using the values in update params
+    const updatedFlightData = { ... flightFound, ...updateParams};
+
+    const dbData = readFromDB();
+
+    const flightIndex = dbData.findIndex((flight) => (flight.id === flightFound.id));
+
+    dbData[flightIndex] = updatedFlightData;
+
+    writeFileSync(dbPath, JSON.stringify(dbData), { encoding: 'utf8' });
+
+    return updatedFlightData;
 }
 
 module.exports = {
     addToDB,
     readFromDB,
-    getFlightFromDB
+    getFlightFromDB,
+    updateFlightInDB
 }
