@@ -60,7 +60,16 @@ const addToDB = (newData) => {
     return true;
 };
 
+const getFlightFromDB = (flightId) => {
+    try{
+        return readFromDB().find((flight) => flight.id === flightId);
+    }catch(err){
+        return {};
+    }
+}
+
 module.exports = {
     addToDB,
-    readFromDB
+    readFromDB,
+    getFlightFromDB
 }
