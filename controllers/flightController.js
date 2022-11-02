@@ -1,5 +1,5 @@
 const { validateFlightData, filterFlightData, addIdToData } = require('../utils/dataUtils');
-const { addToDB, readFromDB } = require('../utils/databaseUtils');
+const { addToDB, readFromDB, getFlightFromDB } = require('../utils/databaseUtils');
 
 const addFlight = (req, res) => {
     const flightData = req.body;
@@ -43,8 +43,23 @@ const allFlights = (req, res) => {
     }
 }
 
+const getFlight = (req, res) => {
+    try{
+
+        const flightId = req.params.id;
+
+        const flight = getFlightFromDB(flightId);
+
+        return res.status(200).json({data: flight});
+
+    }catch(err){
+        return res.status(500).json({message: err}).end();
+    }
+}
+
 module.exports = {
     addFlight,
-    allFlights
+    allFlights,
+    getFlight
 }
 
