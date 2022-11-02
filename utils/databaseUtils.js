@@ -54,7 +54,8 @@ const addToDB = (newData) => {
 
         dbData.push(newData);
 
-        writeFileSync(dbPath, JSON.stringify(dbData), { encoding: 'utf8' });
+        saveToDB(dbData);
+
     }catch(err){
         return false;
     }
@@ -88,14 +89,49 @@ const updateFlightInDB = (flightId, updateParams) => {
 
     dbData[flightIndex] = updatedFlightData;
 
-    writeFileSync(dbPath, JSON.stringify(dbData), { encoding: 'utf8' });
+    saveToDB(dbData);
 
     return updatedFlightData;
 }
 
+const saveToDB = (dbData) => {
+    try{
+        writeFileSync(dbPath, JSON.stringify(dbData), { encoding: 'utf8' });
+        return true;
+    }catch(err){
+        throw new Error('Failed to save to database');
+    }
+}
+
+const deleteFlightFromDB = (flightId) => {
+    let dbData = readFromDB();
+    
+    // No data was found in the database
+    if(dbData.length === 0){
+        return false;
+    }
+
+    const flightIndex = dbData.findIndex((flight) => (flight.id === flightId));
+
+    if(flightIndex === -1){
+        return false;
+    }
+
+    // removes the flight from the db
+    dbData.splice(flightIndex, 1);
+
+    const deleteUpdate = saveToDB(dbData);
+
+    if(!deleteUpdate) return false;
+
+    return true;
+}
+
 module.exports = {
     addToDB,
+    saveToDB,
     readFromDB,
     getFlightFromDB,
-    updateFlightInDB
+    updateFlightInDB,
+    deleteFlightFromDB
 }

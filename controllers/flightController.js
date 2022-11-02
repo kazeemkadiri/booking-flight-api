@@ -1,5 +1,11 @@
 const { validateFlightData, filterFlightData, addIdToData } = require('../utils/dataUtils');
-const { addToDB, readFromDB, getFlightFromDB, updateFlightInDB } = require('../utils/databaseUtils');
+const { 
+    addToDB, 
+    readFromDB, 
+    getFlightFromDB, 
+    updateFlightInDB,
+    deleteFlightFromDB 
+} = require('../utils/databaseUtils');
 
 const addFlight = (req, res) => {
     const flightData = req.body;
@@ -61,21 +67,31 @@ const updateFlight = (req, res) => {
     try{
 
         const flightId = req.params.id;
+
         const updateParams = req.body;
         
         const updatedFlight = updateFlightInDB(flightId, updateParams);
 
-        return res.status(200).json({data: updatedFlight});
+        return res.status(200).json({data: updatedFlight}).end();
 
     }catch(err){
         return res.status(500).json({message: err}).end();
     }
 }
 
+const deleteFlight = (req, res) => {
+    const flightDeleted = deleteFlightFromDB(req.params.id);
+    
+    if(!flightDeleted) return res.status(500).json({message: 'Failed to delete flight'}).end();
+
+    return res.status(200).json({data: true}).end();
+}
+
 module.exports = {
     addFlight,
     allFlights,
     getFlight,
-    updateFlight
+    updateFlight,
+    deleteFlight
 }
 
